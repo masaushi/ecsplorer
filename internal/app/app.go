@@ -21,12 +21,13 @@ var (
 )
 
 func Start(ctx context.Context, handler Handler) error {
-	cfg, err := config.LoadDefaultConfig(ctx)
+	defaultConfig, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return err
 	}
 
-	ecsAPI = api.NewECS(cfg)
+	cfg = &defaultConfig
+	ecsAPI = api.NewECS(defaultConfig)
 	app = tview.NewApplication()
 	pages = tview.NewPages()
 
