@@ -10,13 +10,17 @@ import (
 )
 
 type ClusterList struct {
+	region              string
 	clusters            []types.Cluster
 	clusterSelectAction func(cluster types.Cluster)
+	err                 error
 }
 
-func NewClusterList(clusters []types.Cluster) *ClusterList {
+func NewClusterList(region string, clusters []types.Cluster, err error) *ClusterList {
 	return &ClusterList{
+		region:              region,
 		clusters:            clusters,
+		err:                 err,
 		clusterSelectAction: func(cluster types.Cluster) {},
 	}
 }
@@ -29,16 +33,10 @@ func (cl *ClusterList) SetClusterSelectAction(action func(cluster types.Cluster)
 func (cl *ClusterList) Render() tview.Primitive {
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(cl.title(), 2, 1, false).
+		AddItem(ui.CreateHeader("SELECT CLUSTER", cl.region), 2, 1, false).
 		AddItem(cl.table(), 0, 1, true)
 
-	return ui.CreateLayout(body)
-}
-
-func (cl *ClusterList) title() *tview.TextView {
-	return tview.NewTextView().
-		SetText("SELECT CLUSTER").
-		SetTextAlign(tview.AlignCenter)
+	return ui.CreateLayout(body, cl.err)
 }
 
 func (cl *ClusterList) table() *tview.Table {

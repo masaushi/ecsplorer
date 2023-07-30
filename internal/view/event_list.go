@@ -11,20 +11,13 @@ import (
 )
 
 type EventList struct {
-	service        types.Service
-	prevPageAction func()
+	service types.Service
 }
 
 func NewEventList(service types.Service) *EventList {
 	return &EventList{
-		service:        service,
-		prevPageAction: func() {},
+		service: service,
 	}
-}
-
-func (el *EventList) SetPrevPageAction(action func()) *EventList {
-	el.prevPageAction = action
-	return el
 }
 
 func (el *EventList) Render() tview.Primitive {
@@ -34,8 +27,6 @@ func (el *EventList) Render() tview.Primitive {
 
 	page.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyESC:
-			el.prevPageAction()
 		}
 		return event
 	})

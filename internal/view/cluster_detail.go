@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/gdamore/tcell/v2"
+	"github.com/masaushi/ecsplorer/internal/app"
 	"github.com/masaushi/ecsplorer/internal/view/ui"
 	"github.com/rivo/tview"
 )
@@ -14,17 +15,19 @@ type ClusterDetail struct {
 	cluster        types.Cluster
 	tabs           []*ui.Tab
 	prevPageAction func()
+	err            error
 }
 
-func NewClusterDetail(cluster types.Cluster) *ClusterDetail {
+func NewClusterDetail(cluster types.Cluster, err error) *ClusterDetail {
 	return &ClusterDetail{
 		cluster:        cluster,
+		err:            err,
 		tabs:           make([]*ui.Tab, 0),
 		prevPageAction: func() {},
 	}
 }
 
-func (cd *ClusterDetail) AddTab(title string, page Page) *ClusterDetail {
+func (cd *ClusterDetail) AddTab(title string, page app.Page) *ClusterDetail {
 	cd.tabs = append(cd.tabs, &ui.Tab{
 		Title:   title,
 		Content: page.Render(),
@@ -52,18 +55,20 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 			nextTab()
 		case tcell.KeyBacktab:
 			prevTab()
+		case tcell.KeyESC:
+			cd.prevPageAction()
 		}
 		return event
 	})
 
-	return ui.CreateLayout(body)
+	return ui.CreateLayout(body, cd.err)
 }
 
 func (cd *ClusterDetail) header() *tview.Flex {
-	return tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetDynamicColors(true).SetText("[::b]"+aws.ToString(cd.cluster.ClusterName)), 0, 1, false).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetDynamicColors(true).SetText("("+aws.ToString(cd.cluster.ClusterArn)+")"), 0, 1, false)
+	return ui.CreateHeader(
+		aws.ToString(cd.cluster.ClusterName),
+		aws.ToString(cd.cluster.ClusterArn),
+	)
 }
 
 func (cd *ClusterDetail) description() *tview.Flex {

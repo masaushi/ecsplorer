@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/masaushi/ecsplorer/internal/api"
@@ -10,13 +9,10 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func ClusterListHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
+func ClusterListHandler(ctx context.Context, ecsAPI *api.ECS) app.Page {
 	clusters, err := ecsAPI.GetClusters(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	return view.NewClusterList(clusters).
+	return view.NewClusterList(app.Region(), clusters, err).
 		SetClusterSelectAction(func(cluster types.Cluster) {
 			ctx := contextWithValue[types.Cluster](ctx, cluster)
 			app.Goto(ctx, ClusterDetailHandler)

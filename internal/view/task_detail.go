@@ -12,19 +12,19 @@ import (
 
 type TaskDetail struct {
 	task                  types.Task
-	containerSelectAction func(types.Container)
+	containerSelectAction func(types.Container) error
 	prevPageAction        func()
 }
 
-func NewTaskDetail(task types.Task) *TaskDetail {
+func NewTaskDetail(task types.Task, err error) *TaskDetail {
 	return &TaskDetail{
 		task:                  task,
-		containerSelectAction: func(types.Container) {},
+		containerSelectAction: func(types.Container) error { return nil },
 		prevPageAction:        func() {},
 	}
 }
 
-func (td *TaskDetail) SetContainerSelectAction(action func(types.Container)) *TaskDetail {
+func (td *TaskDetail) SetContainerSelectAction(action func(types.Container) error) *TaskDetail {
 	td.containerSelectAction = action
 	return td
 }
@@ -37,7 +37,7 @@ func (td *TaskDetail) SetPrevPageAction(action func()) *TaskDetail {
 func (td *TaskDetail) Render() tview.Primitive {
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(td.header(), 2, 1, false).
+		AddItem(td.header(), 3, 1, false).
 		AddItem(td.description(), 3, 1, false).
 		AddItem(td.table(), 0, 1, true)
 
@@ -49,18 +49,11 @@ func (td *TaskDetail) Render() tview.Primitive {
 		return event
 	})
 
-	return ui.CreateLayout(body)
+	return ui.CreateLayout(body, nil)
 }
 
 func (td *TaskDetail) header() *tview.Flex {
-	text := tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText("task"), 0, 1, false).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText(aws.ToString(td.task.TaskArn)), 0, 1, false)
-
-	return tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(text, 0, 1, false)
+	return ui.CreateHeader("Task", aws.ToString(td.task.TaskArn))
 }
 
 func (td *TaskDetail) description() *tview.Flex {

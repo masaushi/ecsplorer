@@ -13,24 +13,17 @@ import (
 type TaskList struct {
 	tasks            []types.Task
 	taskSelectAction func(types.Task)
-	prevPageAction   func()
 }
 
 func NewTaskList(tasks []types.Task) *TaskList {
 	return &TaskList{
 		tasks:            tasks,
 		taskSelectAction: func(types.Task) {},
-		prevPageAction:   func() {},
 	}
 }
 
 func (tl *TaskList) SetTaskSelectAction(action func(types.Task)) *TaskList {
 	tl.taskSelectAction = action
-	return tl
-}
-
-func (tl *TaskList) SetPrevPageAction(action func()) *TaskList {
-	tl.prevPageAction = action
 	return tl
 }
 
@@ -42,7 +35,6 @@ func (tl *TaskList) Render() tview.Primitive {
 	page.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyESC:
-			tl.prevPageAction()
 		}
 		return event
 	})

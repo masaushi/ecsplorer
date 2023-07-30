@@ -12,20 +12,13 @@ import (
 )
 
 type DeploymentList struct {
-	service        types.Service
-	prevPageAction func()
+	service types.Service
 }
 
 func NewDeploymentList(service types.Service) *DeploymentList {
 	return &DeploymentList{
-		service:        service,
-		prevPageAction: func() {},
+		service: service,
 	}
-}
-
-func (dl *DeploymentList) SetPrevPageAction(action func()) *DeploymentList {
-	dl.prevPageAction = action
-	return dl
 }
 
 func (dl *DeploymentList) Render() tview.Primitive {
@@ -35,8 +28,6 @@ func (dl *DeploymentList) Render() tview.Primitive {
 
 	page.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyESC:
-			dl.prevPageAction()
 		}
 		return event
 	})

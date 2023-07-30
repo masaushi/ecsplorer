@@ -5,7 +5,14 @@ import (
 	"github.com/rivo/tview"
 )
 
-func CreateLayout(body *tview.Flex) (layout *tview.Flex) {
+func CreateLayout(body *tview.Flex, err error) (layout *tview.Flex) {
+	errorMessage := tview.NewTextView().
+		SetTextAlign(tview.AlignCenter).
+		SetTextColor(tcell.ColorRed)
+	if err != nil {
+		errorMessage.SetText(err.Error())
+	}
+
 	command := tview.NewTextView().
 		SetText("▼ ▲ (j k): navigate, q: quit, esc: cancel, ?: help").
 		SetTextColor(tcell.ColorSkyblue)
@@ -19,5 +26,6 @@ func CreateLayout(body *tview.Flex) (layout *tview.Flex) {
 
 	return tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(body, 0, 1, true).
+		AddItem(errorMessage, 2, 1, false).
 		AddItem(footer, 1, 1, false)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -17,11 +16,12 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func TaskDetailHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
+func TaskDetailHandler(ctx context.Context, ecsAPI *api.ECS) app.Page {
 	cluster := valueFromContext[types.Cluster](ctx)
 	task := valueFromContext[types.Task](ctx)
-	return view.NewTaskDetail(task).
-		SetContainerSelectAction(func(container types.Container) {
+
+	return view.NewTaskDetail(task, nil).
+		SetContainerSelectAction(func(container types.Container) error {
 			// TODO: refactor
 			execSess, err := ecsAPI.CreateExecuteSession(ctx, &api.ECSCreateExecuteSessionParams{
 				Cluster:   cluster,
@@ -30,12 +30,12 @@ func TaskDetailHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
 				Command:   "/bin/sh",
 			})
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			sess, err := json.Marshal(execSess)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			target := fmt.Sprintf("ecs:%s_%s_%s",
@@ -45,7 +45,7 @@ func TaskDetailHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
 			)
 			ssmTarget, err := json.Marshal(map[string]string{"Target": target})
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			app.Suspend(func() {
@@ -66,6 +66,8 @@ func TaskDetailHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
 				signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 				cmd.Run()
 			})
+
+			return nil
 		}).
 		SetPrevPageAction(func() {
 			// TODO: refactor

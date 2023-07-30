@@ -9,12 +9,24 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func ServiceDetailHandler(ctx context.Context, ecsAPI *api.ECS) view.Page {
+func ServiceDetailHandler(ctx context.Context, ecsAPI *api.ECS) app.Page {
+	cluster := valueFromContext[types.Cluster](ctx)
 	service := valueFromContext[types.Service](ctx)
-	return view.NewServiceDetail(service).
-		AddTab("Tasks", TaskListHandler(ctx, ecsAPI)).
-		AddTab("Deployments", DeploymentListHandler(ctx, ecsAPI)).
-		AddTab("Events", EventListHandler(ctx, ecsAPI)).
+
+	tasks, err := ecsAPI.GetTasks(ctx, cluster, service)
+
+	taskList := view.NewTaskList(tasks).
+		SetTaskSelectAction(func(t types.Task) {
+			ctx := contextWithValue[types.Task](ctx, t)
+			app.Goto(ctx, TaskDetailHandler)
+		})
+	deploymentList := view.NewDeploymentList(service)
+	eventList := view.NewEventList(service)
+
+	return view.NewServiceDetail(service, err).
+		AddTab("Tasks", taskList).
+		AddTab("Deployments", deploymentList).
+		AddTab("Events", eventList).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
 		})

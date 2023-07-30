@@ -3,8 +3,10 @@ package view
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/gdamore/tcell/v2"
+	"github.com/masaushi/ecsplorer/internal/app"
 	"github.com/masaushi/ecsplorer/internal/view/ui"
 	"github.com/rivo/tview"
 )
@@ -13,17 +15,19 @@ type ServiceDetail struct {
 	service        types.Service
 	tabs           []*ui.Tab
 	prevPageAction func()
+	err            error
 }
 
-func NewServiceDetail(service types.Service) *ServiceDetail {
+func NewServiceDetail(service types.Service, err error) *ServiceDetail {
 	return &ServiceDetail{
 		service:        service,
+		err:            err,
 		tabs:           make([]*ui.Tab, 0),
 		prevPageAction: func() {},
 	}
 }
 
-func (sd *ServiceDetail) AddTab(title string, page Page) *ServiceDetail {
+func (sd *ServiceDetail) AddTab(title string, page app.Page) *ServiceDetail {
 	sd.tabs = append(sd.tabs, &ui.Tab{
 		Title:   title,
 		Content: page.Render(),
@@ -57,14 +61,14 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 		return event
 	})
 
-	return ui.CreateLayout(body)
+	return ui.CreateLayout(body, sd.err)
 }
 
 func (sd *ServiceDetail) header() *tview.Flex {
-	return tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText(*sd.service.ServiceName), 0, 1, false).
-		AddItem(tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText("("+*sd.service.ServiceArn+")"), 0, 1, false)
+	return ui.CreateHeader(
+		aws.ToString(sd.service.ServiceName),
+		aws.ToString(sd.service.ServiceArn),
+	)
 }
 
 func (sd *ServiceDetail) description() *tview.Flex {

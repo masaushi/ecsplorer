@@ -13,24 +13,17 @@ import (
 type ServiceList struct {
 	services            []types.Service
 	serviceSelectAction func(service types.Service)
-	prevPageAction      func()
 }
 
 func NewServiceList(services []types.Service) *ServiceList {
 	return &ServiceList{
 		services:            services,
 		serviceSelectAction: func(types.Service) {},
-		prevPageAction:      func() {},
 	}
 }
 
 func (sl *ServiceList) SetServiceSelectAction(action func(types.Service)) *ServiceList {
 	sl.serviceSelectAction = action
-	return sl
-}
-
-func (sl *ServiceList) SetPrevPageAction(action func()) *ServiceList {
-	sl.prevPageAction = action
 	return sl
 }
 
@@ -41,8 +34,6 @@ func (sl *ServiceList) Render() tview.Primitive {
 
 	page.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyESC:
-			sl.prevPageAction()
 		}
 		return event
 	})
