@@ -23,7 +23,7 @@ go install github.com/masaushi/ecsplorer@latest
 After installation, you can launch a terminal UI by executing the `ecsplorer` command.
 
 ### :warning: Note
-If you intend to exec into containers, please ensure that the [`session-manager-plugin`](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) is installed.
+If you intend to exec into containers, please ensure that the [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) is installed.
 
 ## License
 Released under the MIT license.
