@@ -12,16 +12,14 @@ import (
 )
 
 type ClusterDetail struct {
-	cluster        types.Cluster
+	cluster        *types.Cluster
 	tabs           []*ui.Tab
 	prevPageAction func()
-	err            error
 }
 
-func NewClusterDetail(cluster types.Cluster, err error) *ClusterDetail {
+func NewClusterDetail(cluster *types.Cluster) *ClusterDetail {
 	return &ClusterDetail{
 		cluster:        cluster,
-		err:            err,
 		tabs:           make([]*ui.Tab, 0),
 		prevPageAction: func() {},
 	}
@@ -61,7 +59,7 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 		return event
 	})
 
-	return ui.CreateLayout(body, cd.err)
+	return ui.CreateLayout(body)
 }
 
 func (cd *ClusterDetail) header() *tview.Flex {

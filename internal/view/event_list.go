@@ -11,10 +11,10 @@ import (
 )
 
 type EventList struct {
-	service types.Service
+	service *types.Service
 }
 
-func NewEventList(service types.Service) *EventList {
+func NewEventList(service *types.Service) *EventList {
 	return &EventList{
 		service: service,
 	}

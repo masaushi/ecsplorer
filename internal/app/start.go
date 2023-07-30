@@ -10,15 +10,13 @@ import (
 )
 
 func Start(ctx context.Context, handler Handler) error {
-	defaultConfig, err := config.LoadDefaultConfig(ctx)
+	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return err
 	}
 
-	cfg = &defaultConfig
-	ecsAPI = api.NewECS(defaultConfig)
-	app = tview.NewApplication()
-	pages = tview.NewPages()
+	app := tview.NewApplication()
+	pages := tview.NewPages()
 
 	app.
 		SetRoot(pages, true).
@@ -32,6 +30,8 @@ func Start(ctx context.Context, handler Handler) error {
 			return event
 		})
 
-	Goto(ctx, handler)
+	op := newOperator(app, pages, api.NewECS(cfg), &cfg)
+	op.Goto(ctx, handler)
+
 	return app.Run()
 }

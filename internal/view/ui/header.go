@@ -1,12 +1,15 @@
 package ui
 
-import "github.com/rivo/tview"
+import (
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
+)
 
 func CreateHeader(primary, secondary string) *tview.Flex {
 	p := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).
-		SetDynamicColors(true).
-		SetText("[::b]" + primary)
+		SetTextColor(tcell.ColorGreen).
+		SetText(primary)
 
 	s := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).

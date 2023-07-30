@@ -12,20 +12,18 @@ import (
 type ClusterList struct {
 	region              string
 	clusters            []types.Cluster
-	clusterSelectAction func(cluster types.Cluster)
-	err                 error
+	clusterSelectAction func(cluster *types.Cluster)
 }
 
-func NewClusterList(region string, clusters []types.Cluster, err error) *ClusterList {
+func NewClusterList(region string, clusters []types.Cluster) *ClusterList {
 	return &ClusterList{
 		region:              region,
 		clusters:            clusters,
-		err:                 err,
-		clusterSelectAction: func(cluster types.Cluster) {},
+		clusterSelectAction: func(cluster *types.Cluster) {},
 	}
 }
 
-func (cl *ClusterList) SetClusterSelectAction(action func(cluster types.Cluster)) *ClusterList {
+func (cl *ClusterList) SetClusterSelectAction(action func(cluster *types.Cluster)) *ClusterList {
 	cl.clusterSelectAction = action
 	return cl
 }
@@ -36,7 +34,7 @@ func (cl *ClusterList) Render() tview.Primitive {
 		AddItem(ui.CreateHeader("SELECT CLUSTER", cl.region), 2, 1, false).
 		AddItem(cl.table(), 0, 1, true)
 
-	return ui.CreateLayout(body, cl.err)
+	return ui.CreateLayout(body)
 }
 
 func (cl *ClusterList) table() *tview.Table {
@@ -54,6 +52,6 @@ func (cl *ClusterList) table() *tview.Table {
 	}
 
 	return ui.CreateTable(header, rows, func(row, column int) {
-		cl.clusterSelectAction(cl.clusters[row-1])
+		cl.clusterSelectAction(&cl.clusters[row-1])
 	})
 }

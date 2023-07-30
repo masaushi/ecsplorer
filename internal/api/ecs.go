@@ -13,9 +13,9 @@ type ECS struct {
 }
 
 type ECSCreateExecuteSessionParams struct {
-	Cluster   types.Cluster
-	Task      types.Task
-	Container types.Container
+	Cluster   *types.Cluster
+	Task      *types.Task
+	Container *types.Container
 	Command   string
 }
 
@@ -52,7 +52,7 @@ func (e *ECS) GetClusters(ctx context.Context) ([]types.Cluster, error) {
 	return res.Clusters, nil
 }
 
-func (e *ECS) GetServices(ctx context.Context, cluster types.Cluster) ([]types.Service, error) {
+func (e *ECS) GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, error) {
 	serviceARNs := make([]string, 0)
 	var nextToken *string
 	for {
@@ -83,13 +83,18 @@ func (e *ECS) GetServices(ctx context.Context, cluster types.Cluster) ([]types.S
 
 }
 
-func (e *ECS) GetTasks(ctx context.Context, cluster types.Cluster, service types.Service) ([]types.Task, error) {
-	taskARNs := make([]string, 0)
+func (e *ECS) GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Service) ([]types.Task, error) {
 	var nextToken *string
+	var serviceName *string
+	if service != nil {
+		serviceName = service.ServiceName
+	}
+
+	taskARNs := make([]string, 0)
 	for {
 		res, err := e.client.ListTasks(ctx, &ecs.ListTasksInput{
 			Cluster:     cluster.ClusterArn,
-			ServiceName: service.ServiceName,
+			ServiceName: serviceName,
 			NextToken:   nextToken,
 		})
 		if err != nil {

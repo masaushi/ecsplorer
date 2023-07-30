@@ -12,17 +12,17 @@ import (
 
 type TaskList struct {
 	tasks            []types.Task
-	taskSelectAction func(types.Task)
+	taskSelectAction func(*types.Task)
 }
 
 func NewTaskList(tasks []types.Task) *TaskList {
 	return &TaskList{
 		tasks:            tasks,
-		taskSelectAction: func(types.Task) {},
+		taskSelectAction: func(*types.Task) {},
 	}
 }
 
-func (tl *TaskList) SetTaskSelectAction(action func(types.Task)) *TaskList {
+func (tl *TaskList) SetTaskSelectAction(action func(*types.Task)) *TaskList {
 	tl.taskSelectAction = action
 	return tl
 }
@@ -58,6 +58,6 @@ func (tl *TaskList) table() *tview.Table {
 	}
 
 	return ui.CreateTable(header, rows, func(row, column int) {
-		tl.taskSelectAction(tl.tasks[row-1])
+		tl.taskSelectAction(&tl.tasks[row-1])
 	})
 }

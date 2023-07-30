@@ -12,17 +12,17 @@ import (
 
 type ServiceList struct {
 	services            []types.Service
-	serviceSelectAction func(service types.Service)
+	serviceSelectAction func(service *types.Service)
 }
 
 func NewServiceList(services []types.Service) *ServiceList {
 	return &ServiceList{
 		services:            services,
-		serviceSelectAction: func(types.Service) {},
+		serviceSelectAction: func(*types.Service) {},
 	}
 }
 
-func (sl *ServiceList) SetServiceSelectAction(action func(types.Service)) *ServiceList {
+func (sl *ServiceList) SetServiceSelectAction(action func(*types.Service)) *ServiceList {
 	sl.serviceSelectAction = action
 	return sl
 }
@@ -55,6 +55,6 @@ func (sl *ServiceList) table() *tview.Table {
 	}
 
 	return ui.CreateTable(header, rows, func(row, column int) {
-		sl.serviceSelectAction(sl.services[row-1])
+		sl.serviceSelectAction(&sl.services[row-1])
 	})
 }

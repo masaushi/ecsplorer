@@ -12,16 +12,14 @@ import (
 )
 
 type ServiceDetail struct {
-	service        types.Service
+	service        *types.Service
 	tabs           []*ui.Tab
 	prevPageAction func()
-	err            error
 }
 
-func NewServiceDetail(service types.Service, err error) *ServiceDetail {
+func NewServiceDetail(service *types.Service) *ServiceDetail {
 	return &ServiceDetail{
 		service:        service,
-		err:            err,
 		tabs:           make([]*ui.Tab, 0),
 		prevPageAction: func() {},
 	}
@@ -61,7 +59,7 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 		return event
 	})
 
-	return ui.CreateLayout(body, sd.err)
+	return ui.CreateLayout(body)
 }
 
 func (sd *ServiceDetail) header() *tview.Flex {

@@ -12,10 +12,10 @@ import (
 )
 
 type DeploymentList struct {
-	service types.Service
+	service *types.Service
 }
 
-func NewDeploymentList(service types.Service) *DeploymentList {
+func NewDeploymentList(service *types.Service) *DeploymentList {
 	return &DeploymentList{
 		service: service,
 	}
