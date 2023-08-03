@@ -48,6 +48,7 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 		AddItem(tab, 0, 1, true)
 
 	body.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		//nolint:exhaustive
 		switch event.Key() {
 		case tcell.KeyTab:
 			nextTab()
@@ -55,6 +56,7 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 			prevTab()
 		case tcell.KeyESC:
 			cd.prevPageAction()
+		default:
 		}
 		return event
 	})

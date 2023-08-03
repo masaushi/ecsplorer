@@ -22,6 +22,7 @@ func Start(ctx context.Context, handler Handler) error {
 		SetRoot(pages, true).
 		EnableMouse(true).
 		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			//nolint:exhaustive
 			switch event.Rune() {
 			case 'q':
 				app.Stop()

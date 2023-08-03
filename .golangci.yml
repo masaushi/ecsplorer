@@ -36,6 +36,7 @@ linters:
   # Disable specific linter
   # https://golangci-lint.run/usage/linters/#disabled-by-default
   disable:
+    - wrapcheck
   # Enable presets.
   # https://golangci-lint.run/usage/linters
   presets:
@@ -43,7 +44,6 @@ linters:
     - error
     - metalinter
     - performance
-    - test
     - unused
 
 issues:
