@@ -8,7 +8,7 @@ import (
 	"github.com/masaushi/ecsplorer/internal/handler"
 )
 
-func Execute(args []string) {
+func Execute(_ []string) {
 	ctx := context.Background()
 	if err := app.Start(ctx, handler.ClusterListHandler); err != nil {
 		log.Fatal(err)

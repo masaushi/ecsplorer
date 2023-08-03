@@ -42,9 +42,11 @@ func (td *TaskDetail) Render() tview.Primitive {
 		AddItem(td.table(), 0, 1, true)
 
 	body.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		//nolint:exhaustive
 		switch event.Key() {
 		case tcell.KeyESC:
 			td.prevPageAction()
+		default:
 		}
 		return event
 	})

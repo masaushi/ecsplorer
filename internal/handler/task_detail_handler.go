@@ -51,6 +51,7 @@ func TaskDetailHandler(ctx context.Context, operator app.Operator) (app.Page, er
 				}
 
 				operator.Suspend(func() {
+					//nolint:gosec
 					cmd := exec.Command(
 						"session-manager-plugin",
 						string(sess),

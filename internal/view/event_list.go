@@ -5,7 +5,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/gdamore/tcell/v2"
 	"github.com/masaushi/ecsplorer/internal/view/ui"
 	"github.com/rivo/tview"
 )
@@ -24,12 +23,6 @@ func (el *EventList) Render() tview.Primitive {
 	page := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(el.table(), 0, 1, true)
-
-	page.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Key() {
-		}
-		return event
-	})
 
 	return page
 }
