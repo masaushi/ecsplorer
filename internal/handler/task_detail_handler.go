@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/signal"
-	"syscall"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -65,11 +63,12 @@ func TaskDetailHandler(ctx context.Context, operator app.Operator) (app.Page, er
 					cmd.Stdout = os.Stdout
 					cmd.Stdin = os.Stdin
 					cmd.Stderr = os.Stderr
-
-					sigchan := make(chan os.Signal, 1)
-					signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
-					cmd.Run()
+					err = cmd.Run()
 				})
+
+				if err != nil {
+					operator.ErrorModal(err)
+				}
 			})
 		}).
 		SetPrevPageAction(func() {
