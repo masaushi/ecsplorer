@@ -25,7 +25,6 @@ func Execute(args []string) {
 	if err := flags.Parse(args[1:]); err != nil {
 		os.Exit(1)
 	}
-
 	if *version {
 		fmt.Fprintf(os.Stdout, "ecsplorer version: %s\n", getVersion())
 		os.Exit(0)
@@ -35,8 +34,11 @@ func Execute(args []string) {
 		os.Exit(0)
 	}
 
-	ctx := context.Background()
-	if err := app.Start(ctx, handler.ClusterListHandler); err != nil {
+	start, err := app.CreateApplication(context.Background(), getVersion())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := start(handler.ClusterListHandler); err != nil {
 		log.Fatal(err)
 	}
 }

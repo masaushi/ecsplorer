@@ -8,11 +8,11 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func ServiceDetailHandler(ctx context.Context, operator app.Operator) (app.Page, error) {
+func ServiceDetailHandler(ctx context.Context) (app.Page, error) {
 	cluster := valueFromContext[*types.Cluster](ctx)
 	service := valueFromContext[*types.Service](ctx)
 
-	tasks, err := operator.ECS().GetTasks(ctx, cluster, service)
+	tasks, err := app.ECS().GetTasks(ctx, cluster, service)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func ServiceDetailHandler(ctx context.Context, operator app.Operator) (app.Page,
 	taskList := view.NewTaskList(tasks).
 		SetTaskSelectAction(func(t *types.Task) {
 			ctx := contextWithValue[*types.Task](ctx, t)
-			operator.Goto(ctx, TaskDetailHandler)
+			app.Goto(ctx, TaskDetailHandler)
 		})
 	deploymentList := view.NewDeploymentList(service)
 	eventList := view.NewEventList(service)
@@ -30,6 +30,6 @@ func ServiceDetailHandler(ctx context.Context, operator app.Operator) (app.Page,
 		AddTab("Deployments", deploymentList).
 		AddTab("Events", eventList).
 		SetPrevPageAction(func() {
-			operator.Goto(ctx, ClusterDetailHandler)
+			app.Goto(ctx, ClusterDetailHandler)
 		}), nil
 }

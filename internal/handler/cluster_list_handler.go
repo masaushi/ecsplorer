@@ -8,15 +8,15 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func ClusterListHandler(ctx context.Context, operator app.Operator) (app.Page, error) {
-	clusters, err := operator.ECS().GetClusters(ctx)
+func ClusterListHandler(ctx context.Context) (app.Page, error) {
+	clusters, err := app.ECS().GetClusters(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return view.NewClusterList(operator.Region(), clusters).
+	return view.NewClusterList(app.Region(), clusters).
 		SetClusterSelectAction(func(cluster *types.Cluster) {
 			ctx := contextWithValue[*types.Cluster](ctx, cluster)
-			operator.Goto(ctx, ClusterDetailHandler)
+			app.Goto(ctx, ClusterDetailHandler)
 		}), nil
 }
