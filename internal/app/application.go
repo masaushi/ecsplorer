@@ -7,8 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/gdamore/tcell/v2"
-	"github.com/masaushi/ecsplorer/internal/api"
 	"github.com/rivo/tview"
+
+	"github.com/masaushi/ecsplorer/internal/api"
 )
 
 type Handler func(ctx context.Context, option ...any) (Page, error)
@@ -61,24 +62,7 @@ func Goto(ctx context.Context, handler Handler, option ...any) {
 		return
 	}
 
-	Draw(page)
-}
-
-func CurrentPage() string {
-	name, _ := pages.GetFrontPage()
-	return name
-}
-
-func Draw(page Page) {
-	pageName := func() string {
-		t := reflect.TypeOf(page)
-		if t.Kind() == reflect.Ptr {
-			return t.Elem().Name()
-		}
-		return t.Name()
-	}
-
-	pages.AddAndSwitchToPage(pageName(), page.Render(), true)
+	pages.AddAndSwitchToPage(pageName(page), page.Render(), true)
 }
 
 func Region() string {
@@ -112,4 +96,12 @@ func modal(text string, buttons []string, f func(buttonLabel string)) {
 		})
 
 	pages.AddPage("modal", modal, true, true)
+}
+
+func pageName(page Page) string {
+	t := reflect.TypeOf(page)
+	if t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	}
+	return t.Name()
 }
