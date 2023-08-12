@@ -38,7 +38,7 @@ func (cl *ClusterList) SetReloadAction(action func()) *ClusterList {
 func (cl *ClusterList) Render() tview.Primitive {
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(ui.CreateHeader("SELECT CLUSTER", app.Region()), 2, 1, false).
+		AddItem(ui.CreateHeader("CLUSTERS", app.Region()), 2, 1, false).
 		AddItem(cl.table(), 0, 1, true)
 
 	body.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {

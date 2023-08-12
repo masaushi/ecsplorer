@@ -77,7 +77,7 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 
 func (cd *ClusterDetail) header() *tview.Flex {
 	return ui.CreateHeader(
-		aws.ToString(cd.cluster.ClusterName),
+		"CLUSTER: "+aws.ToString(cd.cluster.ClusterName),
 		aws.ToString(cd.cluster.ClusterArn),
 	)
 }

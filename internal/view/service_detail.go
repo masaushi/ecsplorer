@@ -77,7 +77,7 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 
 func (sd *ServiceDetail) header() *tview.Flex {
 	return ui.CreateHeader(
-		aws.ToString(sd.service.ServiceName),
+		"SERVICE: "+aws.ToString(sd.service.ServiceName),
 		aws.ToString(sd.service.ServiceArn),
 	)
 }
