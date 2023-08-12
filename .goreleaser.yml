@@ -38,7 +38,7 @@ archives:
         format: zip
 
 brews:
-  - tap:
+  - repository:
      owner: masaushi
      name: homebrew-tap
      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
