@@ -37,6 +37,12 @@ archives:
       - goos: windows
         format: zip
 
+brews:
+  - tap:
+     owner: masaushi
+     name: homebrew-tap
+     token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+
 checksum:
   name_template: "checksum.txt"
 
