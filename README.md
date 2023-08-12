@@ -10,20 +10,31 @@ This tool serves as a CLI utility to efficiently manage AWS ECS resources and se
 ## Key Features
 - Retrieve lists of ECS resources
 - Exec into containers
-- Various other ECS-related operations
 
 ## Installation
-### Go version < 1.16
+### Download binary
+Binaries for Windows, MacOS and Linux are available in the [release](https://github.com/masaushi/ecsplorer/releases) page.
+
+### via Homebrew for macOS or Linux
+```sh
+brew install masaushi/tap/ecsplorer
+```
+
+### via Go install
+#### Go version < 1.16
 ```sh
 go get github.com/masaushi/ecsplorer
 ```
 
-### Go 1.16+
+#### Go 1.16+
 ```sh
 go install github.com/masaushi/ecsplorer@latest
 ```
 
 After installation, you can launch a terminal UI by executing the `ecsplorer` command.
+```sh
+$ ecsplorer
+```
 
 ### :warning: Note
 If you intend to exec into containers, please ensure that the [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) is installed.
