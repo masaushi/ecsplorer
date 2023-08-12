@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"reflect"
-	"runtime"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -12,7 +11,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-type Handler func(context.Context) (Page, error)
+type Handler func(ctx context.Context, option ...any) (Page, error)
 
 type Page interface {
 	Render() tview.Primitive
@@ -20,12 +19,9 @@ type Page interface {
 
 var (
 	Version string
-)
 
-var (
 	app       *tview.Application
 	pages     *tview.Pages
-	ecs       *api.ECS
 	awsConfig *aws.Config
 )
 
@@ -35,9 +31,10 @@ func CreateApplication(ctx context.Context, version string) (start func(Handler)
 		return nil, err
 	}
 
+	api.SetClient(cfg)
+
 	Version = version
 	awsConfig = &cfg
-	ecs = api.NewECS(cfg)
 	app = tview.NewApplication()
 	pages = tview.NewPages()
 
@@ -57,19 +54,35 @@ func CreateApplication(ctx context.Context, version string) (start func(Handler)
 	return func(h Handler) error { Goto(ctx, h); return app.Run() }, nil
 }
 
-func Goto(ctx context.Context, handler Handler) {
-	page, err := handler(ctx)
+func Goto(ctx context.Context, handler Handler, option ...any) {
+	page, err := handler(ctx, option...)
 	if err != nil {
 		ErrorModal(err)
 		return
 	}
 
-	name := runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name()
-	pages.AddAndSwitchToPage(name, page.Render(), true)
+	Draw(page)
 }
 
-func ECS() *api.ECS {
-	return ecs
+func CurrentPage() string {
+	name, _ := pages.GetFrontPage()
+	return name
+}
+
+func Draw(page Page) {
+	pageName := func() string {
+		t := reflect.TypeOf(page)
+		if t.Kind() == reflect.Ptr {
+			return t.Elem().Name()
+		}
+		return t.Name()
+	}
+
+	pages.AddAndSwitchToPage(pageName(), page.Render(), true)
+}
+
+func Region() string {
+	return awsConfig.Region
 }
 
 func Suspend(f func()) bool {
@@ -99,8 +112,4 @@ func modal(text string, buttons []string, f func(buttonLabel string)) {
 		})
 
 	pages.AddPage("modal", modal, true, true)
-}
-
-func Region() string {
-	return awsConfig.Region
 }

@@ -12,7 +12,13 @@ type Tab struct {
 	Content tview.Primitive
 }
 
-func CreateTabPage(tabs []*Tab) (page *tview.Flex, nextAction, prevAction func()) {
+type TabPage struct {
+	Page *tview.Flex
+	Next func() (currentTab int)
+	Prev func() (currentTab int)
+}
+
+func CreateTabPage(tabs []*Tab, selected int) *TabPage {
 	pages := tview.NewPages()
 
 	info := tview.NewTextView().
@@ -24,28 +30,30 @@ func CreateTabPage(tabs []*Tab) (page *tview.Flex, nextAction, prevAction func()
 			pages.SwitchToPage(added[0])
 		})
 
-	previousTab := func() {
+	previousTab := func() int {
 		tab, _ := strconv.Atoi(info.GetHighlights()[0])
 		tab = (tab - 1 + len(tabs)) % len(tabs)
-		info.Highlight(strconv.Itoa(tab)).
-			ScrollToHighlight()
+		info.Highlight(strconv.Itoa(tab)).ScrollToHighlight()
+		return tab
 	}
-	nextTab := func() {
+	nextTab := func() int {
 		tab, _ := strconv.Atoi(info.GetHighlights()[0])
 		tab = (tab + 1) % len(tabs)
-		info.Highlight(strconv.Itoa(tab)).
-			ScrollToHighlight()
+		info.Highlight(strconv.Itoa(tab)).ScrollToHighlight()
+		return tab
 	}
+
 	for index, tab := range tabs {
-		pages.AddPage(strconv.Itoa(index), tab.Content, true, index == 0)
+		pages.AddPage(strconv.Itoa(index), tab.Content, true, index == selected)
 		fmt.Fprintf(info, `["%d"][skyblue::b] %s [white][""]  `, index, tab.Title)
 	}
-	info.Highlight("0")
 
-	page = tview.NewFlex().
+	info.Highlight(strconv.Itoa(selected)).ScrollToHighlight()
+
+	page := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(info, 1, 1, false).
 		AddItem(pages, 0, 1, true)
 
-	return page, nextTab, previousTab
+	return &TabPage{page, nextTab, previousTab}
 }

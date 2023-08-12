@@ -1,7 +1,7 @@
 package view
 
 import (
-	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -10,19 +10,19 @@ import (
 )
 
 type TaskList struct {
-	tasks            []types.Task
-	taskSelectAction func(*types.Task)
+	tasks        []types.Task
+	selectAction func(*types.Task)
 }
 
 func NewTaskList(tasks []types.Task) *TaskList {
 	return &TaskList{
-		tasks:            tasks,
-		taskSelectAction: func(*types.Task) {},
+		tasks:        tasks,
+		selectAction: func(*types.Task) {},
 	}
 }
 
-func (tl *TaskList) SetTaskSelectAction(action func(*types.Task)) *TaskList {
-	tl.taskSelectAction = action
+func (tl *TaskList) SetSelectAction(action func(*types.Task)) *TaskList {
+	tl.selectAction = action
 	return tl
 }
 
@@ -50,6 +50,6 @@ func (tl *TaskList) table() *tview.Table {
 	}
 
 	return ui.CreateTable(header, rows, func(row, column int) {
-		tl.taskSelectAction(&tl.tasks[row-1])
+		tl.selectAction(&tl.tasks[row-1])
 	})
 }

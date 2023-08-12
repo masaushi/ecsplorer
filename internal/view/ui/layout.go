@@ -8,7 +8,7 @@ import (
 
 func CreateLayout(body *tview.Flex) (layout *tview.Flex) {
 	command := tview.NewTextView().
-		SetText("▼ ▲ (j k): navigate, q: quit, esc: cancel, ?: help").
+		SetText("▼ ▲ (j k): navigate, q: quit, esc: cancel, r: reload, ?: help").
 		SetTextColor(tcell.ColorSkyblue)
 	version := tview.NewTextView().
 		SetText(app.Version).

@@ -11,21 +11,28 @@ import (
 )
 
 type TaskDetail struct {
-	task                  *types.Task
-	containerSelectAction func(*types.Container)
-	prevPageAction        func()
+	task           *types.Task
+	selectAction   func(*types.Container)
+	reloadAction   func()
+	prevPageAction func()
 }
 
 func NewTaskDetail(task *types.Task) *TaskDetail {
 	return &TaskDetail{
-		task:                  task,
-		containerSelectAction: func(*types.Container) {},
-		prevPageAction:        func() {},
+		task:           task,
+		selectAction:   func(*types.Container) {},
+		reloadAction:   func() {},
+		prevPageAction: func() {},
 	}
 }
 
-func (td *TaskDetail) SetContainerSelectAction(action func(*types.Container)) *TaskDetail {
-	td.containerSelectAction = action
+func (td *TaskDetail) SetSelectAction(action func(*types.Container)) *TaskDetail {
+	td.selectAction = action
+	return td
+}
+
+func (td *TaskDetail) SetReloadAction(action func()) *TaskDetail {
+	td.reloadAction = action
 	return td
 }
 
@@ -82,6 +89,6 @@ func (td *TaskDetail) table() *tview.Table {
 	}
 
 	return ui.CreateTable(header, rows, func(row, column int) {
-		td.containerSelectAction(&td.task.Containers[row-1])
+		td.selectAction(&td.task.Containers[row-1])
 	})
 }

@@ -13,14 +13,18 @@ import (
 
 type ClusterDetail struct {
 	cluster        *types.Cluster
+	currentTab     int
 	tabs           []*ui.Tab
+	reloadAction   func(currentTab int)
 	prevPageAction func()
 }
 
-func NewClusterDetail(cluster *types.Cluster) *ClusterDetail {
+func NewClusterDetail(cluster *types.Cluster, currentTab int) *ClusterDetail {
 	return &ClusterDetail{
 		cluster:        cluster,
+		currentTab:     currentTab,
 		tabs:           make([]*ui.Tab, 0),
+		reloadAction:   func(currentTab int) {},
 		prevPageAction: func() {},
 	}
 }
@@ -33,29 +37,36 @@ func (cd *ClusterDetail) AddTab(title string, page app.Page) *ClusterDetail {
 	return cd
 }
 
+func (cd *ClusterDetail) SetReloadAction(action func(currentTab int)) *ClusterDetail {
+	cd.reloadAction = action
+	return cd
+}
+
 func (cd *ClusterDetail) SetPrevPageAction(action func()) *ClusterDetail {
 	cd.prevPageAction = action
 	return cd
 }
 
 func (cd *ClusterDetail) Render() tview.Primitive {
-	tab, nextTab, prevTab := ui.CreateTabPage(cd.tabs)
+	tabPage := ui.CreateTabPage(cd.tabs, cd.currentTab)
 
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(cd.header(), 3, 1, false).
 		AddItem(cd.description(), 3, 1, false).
-		AddItem(tab, 0, 1, true)
+		AddItem(tabPage.Page, 0, 1, true)
 
 	body.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		//nolint:exhaustive
-		switch event.Key() {
-		case tcell.KeyTab:
-			nextTab()
-		case tcell.KeyBacktab:
-			prevTab()
-		case tcell.KeyESC:
+		switch {
+		case event.Key() == tcell.KeyTab:
+			cd.currentTab = tabPage.Next()
+		case event.Key() == tcell.KeyBacktab:
+			cd.currentTab = tabPage.Prev()
+		case event.Key() == tcell.KeyESC:
 			cd.prevPageAction()
+		case event.Rune() == 'r':
+			cd.reloadAction(cd.currentTab)
 		default:
 		}
 		return event

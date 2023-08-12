@@ -8,9 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-type ECS struct {
-	client *ecs.Client
-}
+var client *ecs.Client
 
 type ECSCreateExecuteSessionParams struct {
 	Cluster   *types.Cluster
@@ -19,16 +17,15 @@ type ECSCreateExecuteSessionParams struct {
 	Command   string
 }
 
-func NewECS(config aws.Config) *ECS {
-	client := ecs.NewFromConfig(config)
-	return &ECS{client: client}
+func SetClient(config aws.Config) {
+	client = ecs.NewFromConfig(config)
 }
 
-func (e *ECS) GetClusters(ctx context.Context) ([]types.Cluster, error) {
+func GetClusters(ctx context.Context) ([]types.Cluster, error) {
 	clusterARNs := make([]string, 0)
 	var nextToken *string
 	for {
-		res, err := e.client.ListClusters(ctx, &ecs.ListClustersInput{
+		res, err := client.ListClusters(ctx, &ecs.ListClustersInput{
 			NextToken: nextToken,
 		})
 		if err != nil {
@@ -42,7 +39,7 @@ func (e *ECS) GetClusters(ctx context.Context) ([]types.Cluster, error) {
 		}
 	}
 
-	res, err := e.client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
+	res, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
 		Clusters: clusterARNs,
 	})
 	if err != nil {
@@ -52,11 +49,11 @@ func (e *ECS) GetClusters(ctx context.Context) ([]types.Cluster, error) {
 	return res.Clusters, nil
 }
 
-func (e *ECS) GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, error) {
+func GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, error) {
 	serviceARNs := make([]string, 0)
 	var nextToken *string
 	for {
-		res, err := e.client.ListServices(ctx, &ecs.ListServicesInput{
+		res, err := client.ListServices(ctx, &ecs.ListServicesInput{
 			Cluster:   cluster.ClusterArn,
 			NextToken: nextToken,
 		})
@@ -71,7 +68,7 @@ func (e *ECS) GetServices(ctx context.Context, cluster *types.Cluster) ([]types.
 		}
 	}
 
-	res, err := e.client.DescribeServices(ctx, &ecs.DescribeServicesInput{
+	res, err := client.DescribeServices(ctx, &ecs.DescribeServicesInput{
 		Cluster:  cluster.ClusterArn,
 		Services: serviceARNs,
 	})
@@ -80,10 +77,9 @@ func (e *ECS) GetServices(ctx context.Context, cluster *types.Cluster) ([]types.
 	}
 
 	return res.Services, nil
-
 }
 
-func (e *ECS) GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Service) ([]types.Task, error) {
+func GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Service) ([]types.Task, error) {
 	var nextToken *string
 	var serviceName *string
 	if service != nil {
@@ -92,7 +88,7 @@ func (e *ECS) GetTasks(ctx context.Context, cluster *types.Cluster, service *typ
 
 	taskARNs := make([]string, 0)
 	for {
-		res, err := e.client.ListTasks(ctx, &ecs.ListTasksInput{
+		res, err := client.ListTasks(ctx, &ecs.ListTasksInput{
 			Cluster:     cluster.ClusterArn,
 			ServiceName: serviceName,
 			NextToken:   nextToken,
@@ -108,7 +104,7 @@ func (e *ECS) GetTasks(ctx context.Context, cluster *types.Cluster, service *typ
 		}
 	}
 
-	describeRes, err := e.client.DescribeTasks(ctx, &ecs.DescribeTasksInput{
+	describeRes, err := client.DescribeTasks(ctx, &ecs.DescribeTasksInput{
 		Cluster: cluster.ClusterArn,
 		Tasks:   taskARNs,
 	})
@@ -119,8 +115,8 @@ func (e *ECS) GetTasks(ctx context.Context, cluster *types.Cluster, service *typ
 	return describeRes.Tasks, nil
 }
 
-func (e *ECS) CreateExecuteSession(ctx context.Context, params *ECSCreateExecuteSessionParams) (*types.Session, error) {
-	res, err := e.client.ExecuteCommand(ctx, &ecs.ExecuteCommandInput{
+func CreateExecuteSession(ctx context.Context, params *ECSCreateExecuteSessionParams) (*types.Session, error) {
+	res, err := client.ExecuteCommand(ctx, &ecs.ExecuteCommandInput{
 		Command:     aws.String(params.Command),
 		Interactive: true,
 		Cluster:     params.Cluster.ClusterArn,
