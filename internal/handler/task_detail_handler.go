@@ -14,28 +14,31 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-func TaskDetailHandler(ctx context.Context, operator app.Operator) (app.Page, error) {
+func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 	cluster := valueFromContext[*types.Cluster](ctx)
 	task := valueFromContext[*types.Task](ctx)
 
 	return view.NewTaskDetail(task).
-		SetContainerSelectAction(func(container *types.Container) {
-			operator.ConfirmModal("Exec shell against the container?", func() {
+		SetReloadAction(func() {
+			app.Goto(ctx, TaskDetailHandler)
+		}).
+		SetSelectAction(func(container *types.Container) {
+			app.ConfirmModal("Exec shell against the container?", func() {
 				// TODO: refactor
-				execSess, err := operator.ECS().CreateExecuteSession(ctx, &api.ECSCreateExecuteSessionParams{
+				execSess, err := api.CreateExecuteSession(ctx, &api.ECSCreateExecuteSessionParams{
 					Cluster:   cluster,
 					Task:      task,
 					Container: container,
 					Command:   "/bin/sh",
 				})
 				if err != nil {
-					operator.ErrorModal(err)
+					app.ErrorModal(err)
 					return
 				}
 
 				sess, err := json.Marshal(execSess)
 				if err != nil {
-					operator.ErrorModal(err)
+					app.ErrorModal(err)
 					return
 				}
 
@@ -46,16 +49,16 @@ func TaskDetailHandler(ctx context.Context, operator app.Operator) (app.Page, er
 				)
 				ssmTarget, err := json.Marshal(map[string]string{"Target": target})
 				if err != nil {
-					operator.ErrorModal(err)
+					app.ErrorModal(err)
 					return
 				}
 
-				operator.Suspend(func() {
+				app.Suspend(func() {
 					//nolint:gosec
 					cmd := exec.Command(
 						"session-manager-plugin",
 						string(sess),
-						operator.Region(),
+						app.Region(),
 						"StartSession",
 						"",
 						string(ssmTarget),
@@ -68,11 +71,11 @@ func TaskDetailHandler(ctx context.Context, operator app.Operator) (app.Page, er
 				})
 
 				if err != nil {
-					operator.ErrorModal(err)
+					app.ErrorModal(err)
 				}
 			})
 		}).
 		SetPrevPageAction(func() {
-			operator.Goto(ctx, ClusterDetailHandler)
+			app.Goto(ctx, ClusterDetailHandler)
 		}), nil
 }

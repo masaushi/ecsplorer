@@ -8,8 +8,8 @@ import (
 func CreateHeader(primary, secondary string) *tview.Flex {
 	p := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).
-		SetTextColor(tcell.ColorGreen).
-		SetText(primary)
+		SetTextColor(tcell.ColorYellow).
+		SetText("[ " + primary + " ]")
 
 	s := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).

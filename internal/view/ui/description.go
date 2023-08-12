@@ -9,7 +9,7 @@ import (
 func CreateDescription(title, value string) *tview.Flex {
 	titleText := tview.NewTextView().
 		SetDynamicColors(true).
-		SetText(fmt.Sprintf("[yellow::b][ %s ]", title))
+		SetText(fmt.Sprintf("[green::b][ %s ]", title))
 
 	valueText := tview.NewTextView().
 		SetText(value)
