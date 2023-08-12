@@ -35,17 +35,17 @@ func (tl *TaskList) Render() tview.Primitive {
 }
 
 func (tl *TaskList) table() *tview.Table {
-	header := []string{"TASK ARN", "VERSION", "CPU", "MEMORY", "HEALTH STATUS"}
+	header := []string{"TASK ARN", "CPU", "MEMORY", "HEALTH STATUS", "CREATED AT"}
 
 	rows := make([][]string, len(tl.tasks))
 	for i, task := range tl.tasks {
 		rows[i] = make([]string, 0, len(header))
 		rows[i] = append(rows[i],
 			aws.ToString(task.TaskArn),
-			strconv.FormatInt(task.Version, 10),
 			aws.ToString(task.Cpu),
 			aws.ToString(task.Memory),
 			string(task.HealthStatus),
+			task.CreatedAt.Format(time.RFC3339),
 		)
 	}
 
