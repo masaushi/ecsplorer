@@ -57,7 +57,7 @@ func usage(flags *flag.FlagSet) func() {
 
 func getVersion() string {
 	if Version != "" {
-		return Version
+		return "v" + Version
 	}
 
 	info, ok := debug.ReadBuildInfo()

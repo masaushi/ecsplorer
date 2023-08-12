@@ -45,7 +45,7 @@ func CreateTabPage(tabs []*Tab, selected int) *TabPage {
 
 	for index, tab := range tabs {
 		pages.AddPage(strconv.Itoa(index), tab.Content, true, index == selected)
-		fmt.Fprintf(info, `["%d"][skyblue::b] %s [white][""]  `, index, tab.Title)
+		_, _ = fmt.Fprintf(info, `["%d"][skyblue::b] %s [white][""]  `, index, tab.Title)
 	}
 
 	info.Highlight(strconv.Itoa(selected)).ScrollToHighlight()
