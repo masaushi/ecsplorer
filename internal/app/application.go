@@ -26,8 +26,8 @@ var (
 	awsConfig *aws.Config
 )
 
-func CreateApplication(ctx context.Context, version string) (start func(Handler) error, err error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
+func CreateApplication(ctx context.Context, version string, profile string) (start func(Handler) error, err error) {
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithSharedConfigProfile(profile))
 	if err != nil {
 		return nil, err
 	}

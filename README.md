@@ -33,12 +33,25 @@ go get github.com/masaushi/ecsplorer
 go install github.com/masaushi/ecsplorer@latest
 ```
 
+### Usage
 After installation, you can launch a terminal UI by executing the `ecsplorer` command.
+
 ```sh
-$ ecsplorer
+ecsplorer
 ```
 
-### :warning: Note
+#### specify profile
+You can specify a profile from your `.aws/config` by using the `--profile=<profile name>` option or setting the AWS_PROFILE=<profile name> environment variable.
+
+```sh
+ecsplorer --profile=<profile>
+```
+or
+```sh
+AWS_PROFILE=<profile> ecsplorer
+```
+
+### :warning: Note :warning:
 If you intend to exec into containers, please ensure that the [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) is installed.
 
 ## License
