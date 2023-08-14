@@ -21,6 +21,7 @@ func Execute(args []string) {
 	flags.Usage = usage(flags)
 	version := flags.Bool("version", false, "show the version of ecsplorer")
 	help := flags.Bool("help", false, "help for ecsplorer")
+	profile := flags.String("profile", "", "aws profile")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		os.Exit(1)
@@ -34,7 +35,7 @@ func Execute(args []string) {
 		os.Exit(0)
 	}
 
-	start, err := app.CreateApplication(context.Background(), getVersion())
+	start, err := app.CreateApplication(context.Background(), getVersion(), *profile)
 	if err != nil {
 		log.Fatal(err)
 	}
