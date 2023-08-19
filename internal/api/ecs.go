@@ -39,6 +39,10 @@ func GetClusters(ctx context.Context) ([]types.Cluster, error) {
 		}
 	}
 
+	if len(clusterARNs) == 0 {
+		return []types.Cluster{}, nil
+	}
+
 	res, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
 		Clusters: clusterARNs,
 	})
@@ -66,6 +70,10 @@ func GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, 
 		if nextToken == nil {
 			break
 		}
+	}
+
+	if len(serviceARNs) == 0 {
+		return []types.Service{}, nil
 	}
 
 	res, err := client.DescribeServices(ctx, &ecs.DescribeServicesInput{
@@ -102,6 +110,10 @@ func GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Servic
 		if nextToken == nil {
 			break
 		}
+	}
+
+	if len(taskARNs) == 0 {
+		return []types.Task{}, nil
 	}
 
 	describeRes, err := client.DescribeTasks(ctx, &ecs.DescribeTasksInput{
