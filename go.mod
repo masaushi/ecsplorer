@@ -4,14 +4,14 @@ go 1.21
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.23.1
-	github.com/aws/aws-sdk-go-v2/config v1.25.4
+	github.com/aws/aws-sdk-go-v2/config v1.25.5
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.33.1
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/rivo/tview v0.0.0-20230504092913-51ba3688bcdd
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2/credentials v1.16.3 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.16.4 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.5 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.4 // indirect
