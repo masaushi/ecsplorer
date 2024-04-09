@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
 	github.com/aws/aws-sdk-go-v2/config v1.27.10
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.41.6
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.41.7
 	github.com/gdamore/tcell/v2 v2.7.4
 	github.com/rivo/tview v0.0.0-20230504092913-51ba3688bcdd
 )
