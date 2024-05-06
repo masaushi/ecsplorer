@@ -49,7 +49,7 @@ func (tl *TaskList) table() *tview.Table {
 		)
 	}
 
-	return ui.CreateTable(header, rows, func(row, column int) {
+	return ui.CreateTable(header, rows, func(row, _ int) {
 		tl.selectAction(&tl.tasks[row-1])
 	})
 }

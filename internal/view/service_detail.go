@@ -23,7 +23,7 @@ func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
 	return &ServiceDetail{
 		service:        service,
 		currentTab:     currentTab,
-		reloadAction:   func(currentTab int) {},
+		reloadAction:   func(_ int) {},
 		prevPageAction: func() {},
 	}
 }

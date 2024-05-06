@@ -24,7 +24,7 @@ func NewClusterDetail(cluster *types.Cluster, currentTab int) *ClusterDetail {
 		cluster:        cluster,
 		currentTab:     currentTab,
 		tabs:           make([]*ui.Tab, 0),
-		reloadAction:   func(currentTab int) {},
+		reloadAction:   func(_ int) {},
 		prevPageAction: func() {},
 	}
 }

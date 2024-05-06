@@ -43,5 +43,5 @@ func (dl *DeploymentList) table() *tview.Table {
 		)
 	}
 
-	return ui.CreateTable(header, rows, func(row, column int) {})
+	return ui.CreateTable(header, rows, func(_, _ int) {})
 }

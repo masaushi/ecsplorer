@@ -20,7 +20,7 @@ type ClusterList struct {
 func NewClusterList(clusters []types.Cluster) *ClusterList {
 	return &ClusterList{
 		clusters:     clusters,
-		selectAction: func(cluster *types.Cluster) {},
+		selectAction: func(_ *types.Cluster) {},
 		reloadAction: func() {},
 	}
 }
@@ -68,7 +68,7 @@ func (cl *ClusterList) table() *tview.Table {
 		)
 	}
 
-	return ui.CreateTable(header, rows, func(row, column int) {
+	return ui.CreateTable(header, rows, func(row, _ int) {
 		cl.selectAction(&cl.clusters[row-1])
 	})
 }
