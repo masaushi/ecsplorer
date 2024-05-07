@@ -88,7 +88,7 @@ func (td *TaskDetail) table() *tview.Table {
 		)
 	}
 
-	return ui.CreateTable(header, rows, func(row, column int) {
+	return ui.CreateTable(header, rows, func(row, _ int) {
 		td.selectAction(&td.task.Containers[row-1])
 	})
 }

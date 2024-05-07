@@ -47,7 +47,7 @@ func (sl *ServiceList) table() *tview.Table {
 		)
 	}
 
-	return ui.CreateTable(header, rows, func(row, column int) {
+	return ui.CreateTable(header, rows, func(row, _ int) {
 		sl.selectAction(&sl.services[row-1])
 	})
 }

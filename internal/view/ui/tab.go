@@ -26,7 +26,7 @@ func CreateTabPage(tabs []*Tab, selected int) *TabPage {
 		SetRegions(true).
 		SetTextAlign(tview.AlignCenter).
 		SetWrap(false).
-		SetHighlightedFunc(func(added, removed, remaining []string) {
+		SetHighlightedFunc(func(added, _, _ []string) {
 			pages.SwitchToPage(added[0])
 		})
 
