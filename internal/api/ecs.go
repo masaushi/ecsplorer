@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/samber/lo"
 )
 
 var client *ecs.Client
@@ -76,15 +77,20 @@ func GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, 
 		return []types.Service{}, nil
 	}
 
-	res, err := client.DescribeServices(ctx, &ecs.DescribeServicesInput{
-		Cluster:  cluster.ClusterArn,
-		Services: serviceARNs,
-	})
-	if err != nil {
-		return nil, err
+	var allServices []types.Service
+	// DescribeServices can only return 10 services per call
+	for _, arns := range lo.Chunk(serviceARNs, 10) {
+		res, err := client.DescribeServices(ctx, &ecs.DescribeServicesInput{
+			Cluster:  cluster.ClusterArn,
+			Services: arns,
+		})
+		if err != nil {
+			return nil, err
+		}
+		allServices = append(allServices, res.Services...)
 	}
 
-	return res.Services, nil
+	return allServices, nil
 }
 
 func GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Service) ([]types.Task, error) {
