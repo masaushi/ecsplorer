@@ -29,7 +29,7 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 					Cluster:   cluster,
 					Task:      task,
 					Container: container,
-					Command:   "/bin/sh",
+					Command:   *app.Cmd,
 				})
 				if err != nil {
 					app.ErrorModal(err)
