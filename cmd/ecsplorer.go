@@ -22,6 +22,7 @@ func Execute(args []string) {
 	version := flags.Bool("version", false, "show the version of ecsplorer")
 	help := flags.Bool("help", false, "help for ecsplorer")
 	profile := flags.String("profile", "", "aws profile")
+	cmd := flags.String("cmd", "/bin/sh", "command to execute in in the container")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		os.Exit(1)
@@ -35,7 +36,7 @@ func Execute(args []string) {
 		os.Exit(0)
 	}
 
-	start, err := app.CreateApplication(context.Background(), getVersion(), *profile)
+	start, err := app.CreateApplication(context.Background(), getVersion(), *profile, cmd)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -20,13 +20,14 @@ type Page interface {
 
 var (
 	Version string
+	Cmd     *string
 
 	app       *tview.Application
 	pages     *tview.Pages
 	awsConfig *aws.Config
 )
 
-func CreateApplication(ctx context.Context, version string, profile string) (start func(Handler) error, err error) {
+func CreateApplication(ctx context.Context, version string, profile string, cmd *string) (start func(Handler) error, err error) {
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithSharedConfigProfile(profile))
 	if err != nil {
 		return nil, err
@@ -35,6 +36,7 @@ func CreateApplication(ctx context.Context, version string, profile string) (sta
 	api.SetClient(cfg)
 
 	Version = version
+	Cmd = cmd
 	awsConfig = &cfg
 	app = tview.NewApplication()
 	pages = tview.NewPages()
