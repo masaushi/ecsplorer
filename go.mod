@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.53.8
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/rivo/tview v0.0.0-20230504092913-51ba3688bcdd
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.49.0
 )
 
 require (
