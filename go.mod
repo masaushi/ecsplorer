@@ -3,7 +3,7 @@ module github.com/masaushi/ecsplorer
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.36.0
+	github.com/aws/aws-sdk-go-v2 v1.36.1
 	github.com/aws/aws-sdk-go-v2/config v1.29.4
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.53.12
 	github.com/gdamore/tcell/v2 v2.8.1
