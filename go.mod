@@ -2,12 +2,10 @@ module github.com/masaushi/ecsplorer
 
 go 1.24
 
-toolchain go1.24.0
-
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.9
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.54.2
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.54.3
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/rivo/tview v0.0.0-20230504092913-51ba3688bcdd
 	github.com/samber/lo v1.49.1
