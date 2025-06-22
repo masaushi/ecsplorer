@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -67,7 +69,40 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 					cmd.Stdout = os.Stdout
 					cmd.Stdin = os.Stdin
 					cmd.Stderr = os.Stderr
-					err = cmd.Run()
+
+					// Set up signal handling to forward signals to the session manager plugin
+					cmd.SysProcAttr = &syscall.SysProcAttr{
+						Setpgid: true,
+					}
+
+					// Start the command
+					if startErr := cmd.Start(); startErr != nil {
+						err = startErr
+						return
+					}
+
+					// Set up signal forwarding
+					sigChan := make(chan os.Signal, 1)
+					signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+					done := make(chan error, 1)
+					go func() {
+						done <- cmd.Wait()
+					}()
+
+					select {
+					case sig := <-sigChan:
+						// Forward signal to the process group
+						if cmd.Process != nil {
+							syscall.Kill(-cmd.Process.Pid, sig.(syscall.Signal))
+						}
+						// Wait for the process to exit
+						err = <-done
+					case err = <-done:
+						// Process exited normally
+					}
+
+					signal.Stop(sigChan)
 				})
 
 				if err != nil {
