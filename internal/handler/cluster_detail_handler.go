@@ -9,10 +9,7 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-type clusterDetailHandlerOption struct {
-	selectedTabIndex int
-}
-
+// ClusterDetailHandler displays detailed information about an ECS cluster with tabs for services and tasks.
 func ClusterDetailHandler(ctx context.Context, options ...any) (app.Page, error) {
 	cluster := valueFromContext[*types.Cluster](ctx)
 	services, err := api.GetServices(ctx, cluster)
@@ -37,18 +34,13 @@ func ClusterDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 			app.Goto(ctx, TaskDetailHandler)
 		})
 
-	var selectedTab int
-	if len(options) > 0 {
-		if option, ok := options[0].(*clusterDetailHandlerOption); ok {
-			selectedTab = option.selectedTabIndex
-		}
-	}
+	selectedTab := parseTabOption(options)
 
 	return view.NewClusterDetail(cluster, selectedTab).
 		AddTab("Services", serviceListView).
 		AddTab("Tasks", taskListView).
 		SetReloadAction(func(currentTab int) {
-			app.Goto(ctx, ClusterDetailHandler, &clusterDetailHandlerOption{selectedTabIndex: currentTab})
+			app.Goto(ctx, ClusterDetailHandler, &TabOption{SelectedTabIndex: currentTab})
 		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterListHandler)

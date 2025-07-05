@@ -9,6 +9,7 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
+// ClusterListHandler displays a list of ECS clusters and handles cluster selection.
 func ClusterListHandler(ctx context.Context, _ ...any) (app.Page, error) {
 	clusters, err := api.GetClusters(ctx)
 	if err != nil {

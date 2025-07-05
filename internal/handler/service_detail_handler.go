@@ -9,10 +9,7 @@ import (
 	"github.com/masaushi/ecsplorer/internal/view"
 )
 
-type serviceDetailHandlerOption struct {
-	selectedTabIndex int
-}
-
+// ServiceDetailHandler displays detailed information about an ECS service with tabs for tasks, deployments, and events.
 func ServiceDetailHandler(ctx context.Context, options ...any) (app.Page, error) {
 	cluster := valueFromContext[*types.Cluster](ctx)
 	service := valueFromContext[*types.Service](ctx)
@@ -30,19 +27,14 @@ func ServiceDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 	deploymentList := view.NewDeploymentList(service)
 	eventList := view.NewEventList(service)
 
-	var selectedTab int
-	if len(options) > 0 {
-		if option, ok := options[0].(*serviceDetailHandlerOption); ok {
-			selectedTab = option.selectedTabIndex
-		}
-	}
+	selectedTab := parseTabOption(options)
 
 	return view.NewServiceDetail(service, selectedTab).
 		AddTab("Tasks", taskList).
 		AddTab("Deployments", deploymentList).
 		AddTab("Events", eventList).
 		SetReloadAction(func(currentTab int) {
-			app.Goto(ctx, ServiceDetailHandler, &serviceDetailHandlerOption{selectedTabIndex: currentTab})
+			app.Goto(ctx, ServiceDetailHandler, &TabOption{SelectedTabIndex: currentTab})
 		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
