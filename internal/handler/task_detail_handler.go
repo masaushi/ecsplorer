@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -54,6 +55,9 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 				}
 
 				app.Suspend(func() {
+					signal.Ignore(os.Interrupt)
+					defer signal.Reset(os.Interrupt)
+
 					//nolint:gosec
 					cmd := exec.Command(
 						"session-manager-plugin",
