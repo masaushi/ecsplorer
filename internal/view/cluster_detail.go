@@ -81,7 +81,7 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 		return event
 	})
 
-	return ui.CreateLayout(body, "i: insights")
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: cluster insights"}))
 }
 
 func (cd *ClusterDetail) header() *tview.Flex {

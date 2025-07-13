@@ -8,15 +8,15 @@ import (
 	"github.com/rivo/tview"
 )
 
-func CreateLayout(body *tview.Flex, customCommand ...string) (layout *tview.Flex) {
-	// commandText := "▼ ▲ (j k): navigate, q: quit, esc: cancel, r: reload, ?: help"
-	commandList := append(
-		[]string{"▼ ▲ (j k): navigate", "q: quit", "esc: cancel", "r: reload"},
-		customCommand...,
-	)
+func CreateLayout(body *tview.Flex, options ...Option) *tview.Flex {
+	var opt = newDefaultOptions()
+
+	for _, option := range options {
+		option(opt)
+	}
 
 	command := tview.NewTextView().
-		SetText(strings.Join(commandList, ", ")).
+		SetText(strings.Join(opt.commands, ", ")).
 		SetTextColor(tcell.ColorSkyblue)
 	version := tview.NewTextView().
 		SetText(app.Version).

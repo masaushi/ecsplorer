@@ -11,13 +11,6 @@ import (
 
 var client *ecs.Client
 
-type ECSCreateExecuteSessionParams struct {
-	Cluster   *types.Cluster
-	Task      *types.Task
-	Container *types.Container
-	Command   string
-}
-
 func SetClient(config aws.Config) {
 	client = ecs.NewFromConfig(config)
 }
@@ -161,14 +154,6 @@ func UpdateServiceDesiredCount(ctx context.Context, cluster *types.Cluster, serv
 	return res.Service, nil
 }
 
-type ClusterInsights struct {
-	ContainerInsights string
-	Configuration     *types.ClusterConfiguration
-	Tags              []types.Tag
-	CapacityProviders []types.CapacityProvider
-	Statistics        []types.KeyValuePair
-}
-
 func GetClusterInsights(ctx context.Context, cluster *types.Cluster) (*ClusterInsights, error) {
 	clusterName := aws.ToString(cluster.ClusterName)
 
@@ -215,6 +200,30 @@ func GetClusterInsights(ctx context.Context, cluster *types.Cluster) (*ClusterIn
 		})
 		if err == nil {
 			insights.CapacityProviders = cpRes.CapacityProviders
+		}
+	}
+
+	return insights, nil
+}
+
+func GetServiceInsights(ctx context.Context, service *types.Service) (*ServiceInsights, error) {
+	insights := &ServiceInsights{
+		LoadBalancers:        service.LoadBalancers,
+		ServiceRegistries:    service.ServiceRegistries,
+		NetworkConfig:        service.NetworkConfiguration,
+		Tags:                 service.Tags,
+		PlacementStrategy:    service.PlacementStrategy,
+		PlacementConstraints: service.PlacementConstraints,
+	}
+
+	// Get task definition details
+	if service.TaskDefinition != nil {
+		taskDefRes, err := client.DescribeTaskDefinition(ctx, &ecs.DescribeTaskDefinitionInput{
+			TaskDefinition: service.TaskDefinition,
+			Include:        []types.TaskDefinitionField{types.TaskDefinitionFieldTags},
+		})
+		if err == nil {
+			insights.TaskDefinition = taskDefRes.TaskDefinition
 		}
 	}
 

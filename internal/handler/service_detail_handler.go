@@ -47,6 +47,9 @@ func ServiceDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 		SetScaleAction(func() {
 			app.Goto(ctx, ServiceScaleHandler)
 		}).
+		SetInsightsAction(func() {
+			app.Goto(ctx, ServiceInsightsHandler)
+		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
 		}), nil

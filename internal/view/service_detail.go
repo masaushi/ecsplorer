@@ -18,6 +18,7 @@ type ServiceDetail struct {
 	reloadAction   func(currentTab int)
 	prevPageAction func()
 	scaleAction    func()
+	insightsAction func()
 }
 
 func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
@@ -27,6 +28,7 @@ func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
 		reloadAction:   func(_ int) {},
 		prevPageAction: func() {},
 		scaleAction:    func() {},
+		insightsAction: func() {},
 	}
 }
 
@@ -53,6 +55,11 @@ func (sd *ServiceDetail) SetScaleAction(action func()) *ServiceDetail {
 	return sd
 }
 
+func (sd *ServiceDetail) SetInsightsAction(action func()) *ServiceDetail {
+	sd.insightsAction = action
+	return sd
+}
+
 func (sd *ServiceDetail) Render() tview.Primitive {
 	tabPage := ui.CreateTabPage(sd.tabs, sd.currentTab)
 
@@ -75,13 +82,15 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 			sd.reloadAction(sd.currentTab)
 		case event.Rune() == 'S':
 			sd.scaleAction()
+		case event.Rune() == 'i':
+			sd.insightsAction()
 		default:
 		}
 
 		return event
 	})
 
-	return ui.CreateLayout(body, "S: scale")
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"S: scale", "i: service insights"}))
 }
 
 func (sd *ServiceDetail) header() *tview.Flex {
@@ -92,10 +101,25 @@ func (sd *ServiceDetail) header() *tview.Flex {
 }
 
 func (sd *ServiceDetail) description() *tview.Flex {
+	// Extract platform and launch type info
+	launchType := "Unknown"
+	if sd.service.LaunchType != "" {
+		launchType = string(sd.service.LaunchType)
+	} else if len(sd.service.CapacityProviderStrategy) > 0 {
+		launchType = "Capacity Provider"
+	}
+
+	platformVersion := aws.ToString(sd.service.PlatformVersion)
+	if platformVersion == "" {
+		platformVersion = "N/A"
+	}
+
 	return tview.NewFlex().
 		AddItem(ui.CreateDescription("Status", aws.ToString(sd.service.Status)), 0, 1, false).
+		AddItem(ui.CreateDescription("Launch Type", launchType), 0, 1, false).
 		AddItem(ui.CreateDescription("Desired Count", fmt.Sprintf("%d tasks", sd.service.DesiredCount)), 0, 1, false).
 		AddItem(ui.CreateDescription("Running Tasks", fmt.Sprintf("%d tasks", sd.service.RunningCount)), 0, 1, false).
 		AddItem(ui.CreateDescription("Pending Tasks", fmt.Sprintf("%d tasks", sd.service.PendingCount)), 0, 1, false).
-		AddItem(ui.CreateDescription("Healthcheck Grace Period", fmt.Sprintf("%d seconds", aws.ToInt32(sd.service.HealthCheckGracePeriodSeconds))), 0, 1, false)
+		AddItem(ui.CreateDescription("Healthcheck Grace Period", fmt.Sprintf("%d seconds", aws.ToInt32(sd.service.HealthCheckGracePeriodSeconds))), 0, 1, false).
+		AddItem(ui.CreateDescription("Platform", platformVersion), 0, 1, false)
 }
