@@ -23,6 +23,9 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 		SetReloadAction(func() {
 			app.Goto(ctx, TaskDetailHandler)
 		}).
+		SetInsightsAction(func() {
+			app.Goto(ctx, TaskInsightsHandler)
+		}).
 		SetSelectAction(func(container *types.Container) {
 			app.ConfirmModal("Exec shell against the container?", func() {
 				// TODO: refactor

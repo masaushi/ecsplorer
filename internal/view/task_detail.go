@@ -15,6 +15,7 @@ type TaskDetail struct {
 	selectAction   func(*types.Container)
 	reloadAction   func()
 	prevPageAction func()
+	insightsAction func()
 }
 
 func NewTaskDetail(task *types.Task) *TaskDetail {
@@ -23,6 +24,7 @@ func NewTaskDetail(task *types.Task) *TaskDetail {
 		selectAction:   func(*types.Container) {},
 		reloadAction:   func() {},
 		prevPageAction: func() {},
+		insightsAction: func() {},
 	}
 }
 
@@ -41,6 +43,11 @@ func (td *TaskDetail) SetPrevPageAction(action func()) *TaskDetail {
 	return td
 }
 
+func (td *TaskDetail) SetInsightsAction(action func()) *TaskDetail {
+	td.insightsAction = action
+	return td
+}
+
 func (td *TaskDetail) Render() tview.Primitive {
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
@@ -50,15 +57,17 @@ func (td *TaskDetail) Render() tview.Primitive {
 
 	body.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		//nolint:exhaustive
-		switch event.Key() {
-		case tcell.KeyESC:
+		switch {
+		case event.Key() == tcell.KeyESC:
 			td.prevPageAction()
+		case event.Rune() == 'i':
+			td.insightsAction()
 		default:
 		}
 		return event
 	})
 
-	return ui.CreateLayout(body)
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: task insights"}))
 }
 
 func (td *TaskDetail) header() *tview.Flex {

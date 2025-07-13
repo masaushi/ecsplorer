@@ -229,3 +229,40 @@ func GetServiceInsights(ctx context.Context, service *types.Service) (*ServiceIn
 
 	return insights, nil
 }
+
+func GetTaskInsights(ctx context.Context, task *types.Task) (*TaskInsights, error) {
+	insights := &TaskInsights{
+		Attachments: task.Attachments,
+	}
+
+	// Get task definition details
+	if task.TaskDefinitionArn != nil {
+		taskDefRes, err := client.DescribeTaskDefinition(ctx, &ecs.DescribeTaskDefinitionInput{
+			TaskDefinition: task.TaskDefinitionArn,
+		})
+		if err == nil {
+			insights.TaskDefinition = taskDefRes.TaskDefinition
+
+			// Match containers with their definitions
+			insights.ContainerDetails = make([]ContainerDetail, len(task.Containers))
+			for i, container := range task.Containers {
+				detail := ContainerDetail{
+					Container:       container,
+					NetworkBindings: container.NetworkBindings,
+				}
+
+				// Find matching container definition
+				for _, containerDef := range taskDefRes.TaskDefinition.ContainerDefinitions {
+					if aws.ToString(containerDef.Name) == aws.ToString(container.Name) {
+						detail.Definition = &containerDef
+						break
+					}
+				}
+
+				insights.ContainerDetails[i] = detail
+			}
+		}
+	}
+
+	return insights, nil
+}
