@@ -10,13 +10,13 @@ import (
 
 func CreateLayout(body *tview.Flex, customCommand ...string) (layout *tview.Flex) {
 	// commandText := "▼ ▲ (j k): navigate, q: quit, esc: cancel, r: reload, ?: help"
-	commandText := "▼ ▲ (j k): navigate, q: quit, esc: cancel, r: reload"
-	if len(customCommand) > 0 {
-		commandText = commandText + ", " + strings.Join(customCommand, ", ")
-	}
+	commandList := append(
+		[]string{"▼ ▲ (j k): navigate", "q: quit", "esc: cancel", "r: reload"},
+		customCommand...,
+	)
 
 	command := tview.NewTextView().
-		SetText(commandText).
+		SetText(strings.Join(commandList, ", ")).
 		SetTextColor(tcell.ColorSkyblue)
 	version := tview.NewTextView().
 		SetText(app.Version).
