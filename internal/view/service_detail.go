@@ -17,6 +17,7 @@ type ServiceDetail struct {
 	tabs           []*ui.Tab
 	reloadAction   func(currentTab int)
 	prevPageAction func()
+	scaleAction    func()
 }
 
 func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
@@ -25,6 +26,7 @@ func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
 		currentTab:     currentTab,
 		reloadAction:   func(_ int) {},
 		prevPageAction: func() {},
+		scaleAction:    func() {},
 	}
 }
 
@@ -43,6 +45,11 @@ func (sd *ServiceDetail) SetReloadAction(action func(currentTab int)) *ServiceDe
 
 func (sd *ServiceDetail) SetPrevPageAction(action func()) *ServiceDetail {
 	sd.prevPageAction = action
+	return sd
+}
+
+func (sd *ServiceDetail) SetScaleAction(action func()) *ServiceDetail {
+	sd.scaleAction = action
 	return sd
 }
 
@@ -66,13 +73,15 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 			sd.prevPageAction()
 		case event.Rune() == 'r':
 			sd.reloadAction(sd.currentTab)
+		case event.Rune() == 'S':
+			sd.scaleAction()
 		default:
 		}
 
 		return event
 	})
 
-	return ui.CreateLayout(body)
+	return ui.CreateLayout(body, "S: scale")
 }
 
 func (sd *ServiceDetail) header() *tview.Flex {
@@ -85,6 +94,7 @@ func (sd *ServiceDetail) header() *tview.Flex {
 func (sd *ServiceDetail) description() *tview.Flex {
 	return tview.NewFlex().
 		AddItem(ui.CreateDescription("Status", aws.ToString(sd.service.Status)), 0, 1, false).
+		AddItem(ui.CreateDescription("Desired Count", fmt.Sprintf("%d tasks", sd.service.DesiredCount)), 0, 1, false).
 		AddItem(ui.CreateDescription("Running Tasks", fmt.Sprintf("%d tasks", sd.service.RunningCount)), 0, 1, false).
 		AddItem(ui.CreateDescription("Pending Tasks", fmt.Sprintf("%d tasks", sd.service.PendingCount)), 0, 1, false).
 		AddItem(ui.CreateDescription("Healthcheck Grace Period", fmt.Sprintf("%d seconds", aws.ToInt32(sd.service.HealthCheckGracePeriodSeconds))), 0, 1, false)

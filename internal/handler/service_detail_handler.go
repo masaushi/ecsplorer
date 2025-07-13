@@ -44,6 +44,9 @@ func ServiceDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 		SetReloadAction(func(currentTab int) {
 			app.Goto(ctx, ServiceDetailHandler, &serviceDetailHandlerOption{selectedTabIndex: currentTab})
 		}).
+		SetScaleAction(func() {
+			app.Goto(ctx, ServiceScaleHandler)
+		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
 		}), nil

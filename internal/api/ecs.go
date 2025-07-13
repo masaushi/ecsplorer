@@ -147,3 +147,16 @@ func CreateExecuteSession(ctx context.Context, params *ECSCreateExecuteSessionPa
 
 	return res.Session, nil
 }
+
+func UpdateServiceDesiredCount(ctx context.Context, cluster *types.Cluster, service *types.Service, desiredCount int32) (*types.Service, error) {
+	res, err := client.UpdateService(ctx, &ecs.UpdateServiceInput{
+		Cluster:      cluster.ClusterArn,
+		Service:      service.ServiceArn,
+		DesiredCount: aws.Int32(desiredCount),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Service, nil
+}

@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -85,6 +86,10 @@ func ConfirmModal(text string, okFunc func()) {
 
 func ErrorModal(err error) {
 	modal(err.Error(), []string{"Close"}, func(_ string) {})
+}
+
+func InfoModal(title, message string) {
+	modal(fmt.Sprintf("%s\n\n%s", title, message), []string{"OK"}, func(_ string) {})
 }
 
 func modal(text string, buttons []string, f func(buttonLabel string)) {
