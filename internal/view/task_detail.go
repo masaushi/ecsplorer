@@ -70,7 +70,7 @@ func (td *TaskDetail) description() *tview.Flex {
 		AddItem(ui.CreateDescription("Last Status", aws.ToString(td.task.LastStatus)), 0, 1, false).
 		AddItem(ui.CreateDescription("Desired Status", aws.ToString(td.task.DesiredStatus)), 0, 1, false).
 		AddItem(ui.CreateDescription("Health Status", string(td.task.HealthStatus)), 0, 1, false).
-		AddItem(ui.CreateDescription("Started At", td.task.StartedAt.Format(time.RFC3339)), 0, 1, false)
+		AddItem(ui.CreateDescription("Started At", aws.ToTime(td.task.StartedAt).Format(time.RFC3339)), 0, 1, false)
 }
 
 func (td *TaskDetail) table() *tview.Table {
