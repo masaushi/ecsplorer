@@ -160,3 +160,63 @@ func UpdateServiceDesiredCount(ctx context.Context, cluster *types.Cluster, serv
 
 	return res.Service, nil
 }
+
+type ClusterInsights struct {
+	ContainerInsights string
+	Configuration     *types.ClusterConfiguration
+	Tags              []types.Tag
+	CapacityProviders []types.CapacityProvider
+	Statistics        []types.KeyValuePair
+}
+
+func GetClusterInsights(ctx context.Context, cluster *types.Cluster) (*ClusterInsights, error) {
+	clusterName := aws.ToString(cluster.ClusterName)
+
+	// Get cluster details with tags
+	describeRes, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
+		Clusters: []string{clusterName},
+		Include: []types.ClusterField{
+			types.ClusterFieldAttachments,
+			types.ClusterFieldConfigurations,
+			types.ClusterFieldSettings,
+			types.ClusterFieldStatistics,
+			types.ClusterFieldTags,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(describeRes.Clusters) == 0 {
+		return &ClusterInsights{}, nil
+	}
+
+	clusterDetails := describeRes.Clusters[0]
+
+	insights := &ClusterInsights{
+		ContainerInsights: "DISABLED",
+		Configuration:     clusterDetails.Configuration,
+		Tags:              clusterDetails.Tags,
+		Statistics:        clusterDetails.Statistics,
+	}
+
+	// Check Container Insights status
+	for _, setting := range clusterDetails.Settings {
+		if string(setting.Name) == "containerInsights" {
+			insights.ContainerInsights = aws.ToString(setting.Value)
+			break
+		}
+	}
+
+	// Get capacity providers
+	if len(clusterDetails.CapacityProviders) > 0 {
+		cpRes, err := client.DescribeCapacityProviders(ctx, &ecs.DescribeCapacityProvidersInput{
+			CapacityProviders: clusterDetails.CapacityProviders,
+		})
+		if err == nil {
+			insights.CapacityProviders = cpRes.CapacityProviders
+		}
+	}
+
+	return insights, nil
+}

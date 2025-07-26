@@ -50,6 +50,9 @@ func ClusterDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 		SetReloadAction(func(currentTab int) {
 			app.Goto(ctx, ClusterDetailHandler, &clusterDetailHandlerOption{selectedTabIndex: currentTab})
 		}).
+		SetInsightsAction(func() {
+			app.Goto(ctx, ClusterInsightsHandler)
+		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterListHandler)
 		}), nil
