@@ -31,3 +31,18 @@ type ServiceInsights struct {
 	PlacementStrategy    []types.PlacementStrategy
 	PlacementConstraints []types.PlacementConstraint
 }
+
+// TaskInsights holds insights about an ECS task.
+type TaskInsights struct {
+	TaskDefinition    *types.TaskDefinition
+	ContainerDetails  []ContainerDetail
+	NetworkInterfaces []types.NetworkInterface
+	Attachments       []types.Attachment
+}
+
+// ContainerDetail holds details about a container within a task.
+type ContainerDetail struct {
+	Container       types.Container
+	Definition      *types.ContainerDefinition
+	NetworkBindings []types.NetworkBinding
+}
