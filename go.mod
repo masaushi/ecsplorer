@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.65.2
 	github.com/gdamore/tcell/v2 v2.9.0
 	github.com/rivo/tview v0.42.0
-	github.com/samber/lo v1.51.0
+	github.com/samber/lo v1.52.0
 )
 
 require (
