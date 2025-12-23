@@ -7,7 +7,7 @@ toolchain go1.24.0
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.6
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.69.5
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.70.0
 	github.com/gdamore/tcell/v2 v2.9.0
 	github.com/rivo/tview v0.42.0
 	github.com/samber/lo v1.52.0
