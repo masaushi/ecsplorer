@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.70.1
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.71.0
 	github.com/gdamore/tcell/v2 v2.13.7
 	github.com/rivo/tview v0.42.0
 	github.com/samber/lo v1.52.0
