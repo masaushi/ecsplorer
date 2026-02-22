@@ -16,6 +16,7 @@ type TaskDetail struct {
 	reloadAction   func()
 	prevPageAction func()
 	insightsAction func()
+	aiAction       func()
 }
 
 func NewTaskDetail(task *types.Task) *TaskDetail {
@@ -25,6 +26,7 @@ func NewTaskDetail(task *types.Task) *TaskDetail {
 		reloadAction:   func() {},
 		prevPageAction: func() {},
 		insightsAction: func() {},
+		aiAction:       func() {},
 	}
 }
 
@@ -48,6 +50,11 @@ func (td *TaskDetail) SetInsightsAction(action func()) *TaskDetail {
 	return td
 }
 
+func (td *TaskDetail) SetAIAction(action func()) *TaskDetail {
+	td.aiAction = action
+	return td
+}
+
 func (td *TaskDetail) Render() tview.Primitive {
 	body := tview.NewFlex().
 		SetDirection(tview.FlexRow).
@@ -62,12 +69,14 @@ func (td *TaskDetail) Render() tview.Primitive {
 			td.prevPageAction()
 		case event.Rune() == 'i':
 			td.insightsAction()
+		case event.Rune() == 'a':
+			td.aiAction()
 		default:
 		}
 		return event
 	})
 
-	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: task insights"}))
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: task insights", "a: AI analysis"}))
 }
 
 func (td *TaskDetail) header() *tview.Flex {

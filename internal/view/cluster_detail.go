@@ -18,6 +18,7 @@ type ClusterDetail struct {
 	reloadAction   func(currentTab int)
 	prevPageAction func()
 	insightsAction func()
+	aiAction       func()
 }
 
 func NewClusterDetail(cluster *types.Cluster, currentTab int) *ClusterDetail {
@@ -28,6 +29,7 @@ func NewClusterDetail(cluster *types.Cluster, currentTab int) *ClusterDetail {
 		reloadAction:   func(_ int) {},
 		prevPageAction: func() {},
 		insightsAction: func() {},
+		aiAction:       func() {},
 	}
 }
 
@@ -54,6 +56,11 @@ func (cd *ClusterDetail) SetInsightsAction(action func()) *ClusterDetail {
 	return cd
 }
 
+func (cd *ClusterDetail) SetAIAction(action func()) *ClusterDetail {
+	cd.aiAction = action
+	return cd
+}
+
 func (cd *ClusterDetail) Render() tview.Primitive {
 	tabPage := ui.CreateTabPage(cd.tabs, cd.currentTab)
 
@@ -76,12 +83,14 @@ func (cd *ClusterDetail) Render() tview.Primitive {
 			cd.reloadAction(cd.currentTab)
 		case event.Rune() == 'i':
 			cd.insightsAction()
+		case event.Rune() == 'a':
+			cd.aiAction()
 		default:
 		}
 		return event
 	})
 
-	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: cluster insights"}))
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"i: cluster insights", "a: AI analysis"}))
 }
 
 func (cd *ClusterDetail) header() *tview.Flex {

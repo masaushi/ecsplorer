@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/rivo/tview"
+
 	"github.com/masaushi/ecsplorer/internal/api"
 	"github.com/masaushi/ecsplorer/internal/app"
 	"github.com/masaushi/ecsplorer/internal/view"
@@ -50,7 +52,33 @@ func ServiceDetailHandler(ctx context.Context, options ...any) (app.Page, error)
 		SetInsightsAction(func() {
 			app.Goto(ctx, ServiceInsightsHandler)
 		}).
+		SetAIAction(func() {
+			showServiceAIMenu(ctx)
+		}).
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
 		}), nil
+}
+
+func showServiceAIMenu(ctx context.Context) {
+	if app.AIProvider() == nil {
+		app.InfoModal("AI Disabled", "AI features are disabled. Use --ai=true to enable.")
+		return
+	}
+
+	list := tview.NewList().
+		AddItem("Log Analysis", "Analyze recent CloudWatch logs", 'l', func() {
+			app.GotoAsync(ctx, AILogAnalysisHandler, "Analyzing logs...")
+		}).
+		AddItem("Metrics Analysis", "Analyze CPU/Memory metrics", 'm', func() {
+			app.GotoAsync(ctx, AIMetricsAnalysisHandler, "Analyzing metrics...")
+		}).
+		AddItem("Config Review", "Review service configuration", 'c', func() {
+			app.GotoAsync(ctx, AIConfigReviewHandler, "Reviewing configuration...")
+		}).
+		AddItem("Troubleshoot", "Comprehensive troubleshooting", 't', func() {
+			app.GotoAsync(ctx, AITroubleshootHandler, "Troubleshooting...")
+		})
+
+	app.ShowAIMenu(list)
 }

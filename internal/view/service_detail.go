@@ -19,6 +19,7 @@ type ServiceDetail struct {
 	prevPageAction func()
 	scaleAction    func()
 	insightsAction func()
+	aiAction       func()
 }
 
 func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
@@ -29,6 +30,7 @@ func NewServiceDetail(service *types.Service, currentTab int) *ServiceDetail {
 		prevPageAction: func() {},
 		scaleAction:    func() {},
 		insightsAction: func() {},
+		aiAction:       func() {},
 	}
 }
 
@@ -60,6 +62,11 @@ func (sd *ServiceDetail) SetInsightsAction(action func()) *ServiceDetail {
 	return sd
 }
 
+func (sd *ServiceDetail) SetAIAction(action func()) *ServiceDetail {
+	sd.aiAction = action
+	return sd
+}
+
 func (sd *ServiceDetail) Render() tview.Primitive {
 	tabPage := ui.CreateTabPage(sd.tabs, sd.currentTab)
 
@@ -84,13 +91,15 @@ func (sd *ServiceDetail) Render() tview.Primitive {
 			sd.scaleAction()
 		case event.Rune() == 'i':
 			sd.insightsAction()
+		case event.Rune() == 'a':
+			sd.aiAction()
 		default:
 		}
 
 		return event
 	})
 
-	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"S: scale", "i: service insights"}))
+	return ui.CreateLayout(body, ui.WithAdditionalCommands([]string{"S: scale", "i: service insights", "a: AI analysis"}))
 }
 
 func (sd *ServiceDetail) header() *tview.Flex {

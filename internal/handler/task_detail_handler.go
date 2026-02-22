@@ -10,6 +10,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/rivo/tview"
+
 	"github.com/masaushi/ecsplorer/internal/api"
 	"github.com/masaushi/ecsplorer/internal/app"
 	"github.com/masaushi/ecsplorer/internal/view"
@@ -25,6 +27,9 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 		}).
 		SetInsightsAction(func() {
 			app.Goto(ctx, TaskInsightsHandler)
+		}).
+		SetAIAction(func() {
+			showTaskAIMenu(ctx)
 		}).
 		SetSelectAction(func(container *types.Container) {
 			app.ConfirmModal("Exec shell against the container?", func() {
@@ -85,4 +90,21 @@ func TaskDetailHandler(ctx context.Context, _ ...any) (app.Page, error) {
 		SetPrevPageAction(func() {
 			app.Goto(ctx, ClusterDetailHandler)
 		}), nil
+}
+
+func showTaskAIMenu(ctx context.Context) {
+	if app.AIProvider() == nil {
+		app.InfoModal("AI Disabled", "AI features are disabled. Use --ai=true to enable.")
+		return
+	}
+
+	list := tview.NewList().
+		AddItem("Config Review", "Review task configuration", 'c', func() {
+			app.GotoAsync(ctx, AITaskConfigReviewHandler, "Reviewing task configuration...")
+		}).
+		AddItem("Log Analysis", "Analyze task logs", 'l', func() {
+			app.GotoAsync(ctx, AITaskLogAnalysisHandler, "Analyzing task logs...")
+		})
+
+	app.ShowAIMenu(list)
 }
