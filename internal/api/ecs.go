@@ -37,14 +37,19 @@ func GetClusters(ctx context.Context) ([]types.Cluster, error) {
 		return []types.Cluster{}, nil
 	}
 
-	res, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
-		Clusters: clusterARNs,
-	})
-	if err != nil {
-		return nil, err
+	var allClusters []types.Cluster
+	// DescribeClusters can only return 100 clusters per call
+	for _, arns := range lo.Chunk(clusterARNs, 100) {
+		res, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{
+			Clusters: arns,
+		})
+		if err != nil {
+			return nil, err
+		}
+		allClusters = append(allClusters, res.Clusters...)
 	}
 
-	return res.Clusters, nil
+	return allClusters, nil
 }
 
 func GetServices(ctx context.Context, cluster *types.Cluster) ([]types.Service, error) {
@@ -115,15 +120,20 @@ func GetTasks(ctx context.Context, cluster *types.Cluster, service *types.Servic
 		return []types.Task{}, nil
 	}
 
-	describeRes, err := client.DescribeTasks(ctx, &ecs.DescribeTasksInput{
-		Cluster: cluster.ClusterArn,
-		Tasks:   taskARNs,
-	})
-	if err != nil {
-		return nil, err
+	var allTasks []types.Task
+	// DescribeTasks can only return 100 tasks per call
+	for _, arns := range lo.Chunk(taskARNs, 100) {
+		describeRes, err := client.DescribeTasks(ctx, &ecs.DescribeTasksInput{
+			Cluster: cluster.ClusterArn,
+			Tasks:   arns,
+		})
+		if err != nil {
+			return nil, err
+		}
+		allTasks = append(allTasks, describeRes.Tasks...)
 	}
 
-	return describeRes.Tasks, nil
+	return allTasks, nil
 }
 
 func CreateExecuteSession(ctx context.Context, params *ECSCreateExecuteSessionParams) (*types.Session, error) {
